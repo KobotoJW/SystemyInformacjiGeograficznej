@@ -1,0 +1,19 @@
+Dla każdej wielkości instancji (10, 20, 30 i 40 samolotów) macierz konfliktów została policzona zakładając 4 możliwe zmiany kierunku lotu (-20, -10, +10, +20 stopni) oraz 2 możliwe zmiany prędkości (-50, +50 jednostek). Oznacza to, ża samolot może wykonać 6 manewrów + 1 przelot bez wykonania zadnego manewru.
+Jeśli "brak manewru" potraktujemy jako dodatkowy specyficzny manewr, wtedy m = 7.
+
+Wielkość macierzy konfliktów to zatem (liczba samolotów x m)^2.
+
+W plikach CM_n=x_m=7.txt znajduje się macierz konfliktów dla przypadku n=x. 
+
+Macierz konfliktów jest zatem w formacie:
+
+                  samolot_1_manewr_1,samolot_1_manewr_2...samolot_1_manewr_m samolot_2_manewr_1, ..., samolot_n-1_manewr_k, ... samolot_n_manewr_k
+samolot_1_manewr_1
+samolot_1_manewr_2
+           ...
+samolot_1_manewr_m
+samolot_2_manewr_1
+...
+samolot_n-1_manewr_k
+...
+samolot_n_manewr_k 
