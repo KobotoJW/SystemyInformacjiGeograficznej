@@ -1,4 +1,5 @@
 from docplex.mp.model import Model
+from cplex.exceptions import CplexError, CplexSolverError
 import numpy as np
 import time
 
@@ -19,8 +20,9 @@ def create_chunks(CM, n, m):
 
 def create_model(n, m):
     model = Model()
-    model.name = 'Model_1'
+    model.name = 'Model_2'
     x = model.binary_var_matrix(range(1, n + 1), range(1, m + 1), name=lambda ns: f'x_{ns[0]}_{ns[1]}')
+    model.minimize(model.sum(j * x[i, j] for i in range(1, n + 1) for j in range(1, m + 1)))
     return model, x
 
 def add_constraints(model, n, m, x, chunks):
