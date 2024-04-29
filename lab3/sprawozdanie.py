@@ -4,22 +4,31 @@ from docplex.mp.model import Model
 import time
 import matplotlib.pyplot as plt
 
-def generate_random_instance(n, m, w, p):
-    CM = [[0] * (n * m) for _ in range(n * m)]
-    indices = [(i, j) for i in range(n * m) for j in range(i + 1, n * m) if (i // m) != (j // m)]
-    ones = random.sample(indices, int(w*len(indices)))
-    for i, j in ones:
-        CM[i][j] = 1
-        CM[j][i] = 1
-    return CM
+def generate_conflict_matrix(n, m, w, p):
+    pm = p * 2**((1-m)/w)
+    rows = n * m
+    conflicts_num = int(((rows - 1) * rows * pm) / 2)
+    
+    matrix = np.zeros((rows, rows), dtype=int)
+    indices = random.sample(range(rows * (rows - 1) // 2), conflicts_num)
+    indices_set = set(indices)
+    k = 0
+    for i in range(rows - 1):
+        for j in range(i + 1, rows):
+            if k in indices_set:
+                matrix[i, j] = 1
+                matrix[j, i] = 1
+            k += 1
+    np.fill_diagonal(matrix, 1)
+    return matrix
 
 
-def read_file(filename):
-    with open(filename, 'r') as file:
-        n = int(filename.split('_')[1].split('=')[1])
-        m = int(filename.split('_')[2].split('=')[1].split('.')[0])
-        CM = [int(x) for line in file for x in line.split()]
-    return n, m, np.array(CM).reshape(n*m, n*m)
+# def read_file(filename):
+#     with open(filename, 'r') as file:
+#         n = int(filename.split('_')[1].split('=')[1])
+#         m = int(filename.split('_')[2].split('=')[1].split('.')[0])
+#         CM = [int(x) for line in file for x in line.split()]
+#     return n, m, np.array(CM).reshape(n*m, n*m)
 
 def create_chunks(CM, n, m):
     chunks = []
@@ -79,27 +88,57 @@ def print_solution_fea(model, execution_time):
         print(f'Czas wykonania: {execution_time} sekund')
         print('Nie znaleziono rozwiązania dopuszczalnego.')
 
-def main():
-    n = 10
-    m = 3
-    w = 1
-    p = 0.5
-    CM = generate_random_instance(n, m, w, p)
-    with open(f'CM_n={n}_m={m}.txt', 'w') as file:
-        for row in CM:
-            file.write(' '.join(str(x) for x in row) + '\n')
-    
-    chunks = create_chunks(CM, n, m)
-    model, x = create_model_fea(n, m)
-    add_constraints(model, n, m, x, chunks)
-    execution_time = solve_model(model)
-    print_solution_fea(model, execution_time)
-    model.clear()
+def analyze_parameters():
+    n_values = [10, 20, 30, 40]
+    m_values = [3, 5, 7, 9]
+    p_values = [0.6, 0.8, 1]
+    w_values = [1, 5, 10]
+    results = []
 
-    model, x = create_model_opt(n, m)
-    add_constraints(model, n, m, x, chunks)
-    execution_time = solve_model(model)
-    print_solution_opt(model, execution_time)
+    for n in n_values:
+        print(f'n = {n}')
+        for m in m_values:
+            print(f'm = {m}')
+            for p in p_values:
+                print(f'p = {p}')
+                for w in w_values:
+                    print(f'w = {w}')
+                    for i in range(10): 
+                        print(f'Iteracja {i}')
+                        CM = generate_conflict_matrix(n, m, w, p)
+                        chunks = create_chunks(CM, n, m)
+
+                        start_time = time.time()
+                        model, x = create_model_fea(n, m)
+                        add_constraints(model, n, m, x, chunks)
+                        solve_model(model)
+                        execution_time_fea = time.time() - start_time
+                        if model.solution is None:
+                            solution_fea_exists = False
+                        else:
+                            solution_fea_exists = True
+                        model.clear()
+
+                        start_time = time.time()
+                        model, x = create_model_opt(n, m)
+                        add_constraints(model, n, m, x, chunks)
+                        solve_model(model)
+                        execution_time_opt = time.time() - start_time
+                        if model.solution is None:
+                            solution_opt_exists = False
+                        else:
+                            solution_opt_exists = True
+                        model.clear()
+
+                        results.append((n, m, p, w, execution_time_fea, solution_fea_exists, execution_time_opt, solution_opt_exists))
+
+    return results
+
+def main():
+    results = analyze_parameters()
+    with open('results2.txt', 'w') as file:
+        for result in results:
+            file.write(f'{result}\n')
 
 
 if __name__ == '__main__':
