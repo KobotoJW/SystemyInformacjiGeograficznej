@@ -2,7 +2,6 @@ import random
 import numpy as np
 from docplex.mp.model import Model
 import time
-import matplotlib.pyplot as plt
 
 def generate_conflict_matrix(n, m, w, p):
     pm = p * 2**((1-m)/w)
@@ -136,7 +135,7 @@ def analyze_parameters():
 
 def main():
     results = analyze_parameters()
-    with open('results2.txt', 'w') as file:
+    with open('results3.txt', 'w') as file:
         for result in results:
             file.write(f'{result}\n')
 

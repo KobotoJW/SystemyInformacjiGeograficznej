@@ -54,7 +54,7 @@ def print_parsed(records):
         print(f'Procent poprawnych rozwiązań: {record.get_percentage_true()}%')
     
 def main():
-    records = parse_file('results2.txt')
+    records = parse_file('results3.txt')
     labels = [f'n={r.n}, m={r.m}, p={r.p}, w={r.w}' for r in records]
     avg_5th_times = [r.get_average_5th() for r in records]
     avg_7th_times = [r.get_average_7th() for r in records]
