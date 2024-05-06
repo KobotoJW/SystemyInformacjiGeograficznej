@@ -21,14 +21,6 @@ def generate_conflict_matrix(n, m, w, p):
     np.fill_diagonal(matrix, 1)
     return matrix
 
-
-# def read_file(filename):
-#     with open(filename, 'r') as file:
-#         n = int(filename.split('_')[1].split('=')[1])
-#         m = int(filename.split('_')[2].split('=')[1].split('.')[0])
-#         CM = [int(x) for line in file for x in line.split()]
-#     return n, m, np.array(CM).reshape(n*m, n*m)
-
 def create_chunks(CM, n, m):
     chunks = []
     for i in range(0, n*m, m):
@@ -71,21 +63,21 @@ def solve_model(model):
     stop_time = time.time()
     return stop_time - start_time
 
-def print_solution_opt(model, execution_time):
-    if model.solution is not None:
-        print(f'Czas wykonania: {execution_time} sekund')
-        print(model.solution.display())
-    else:
-        print(f'Czas wykonania: {execution_time} sekund')
-        print('Nie znaleziono rozwiązania optymalnego.')
+# def print_solution_opt(model, execution_time):
+#     if model.solution is not None:
+#         print(f'Czas wykonania: {execution_time} sekund')
+#         print(model.solution.display())
+#     else:
+#         print(f'Czas wykonania: {execution_time} sekund')
+#         print('Nie znaleziono rozwiązania optymalnego.')
 
-def print_solution_fea(model, execution_time):
-    if model.solution is not None:
-        print(f'Czas wykonania: {execution_time} sekund')
-        print(model.solution.display())
-    else:
-        print(f'Czas wykonania: {execution_time} sekund')
-        print('Nie znaleziono rozwiązania dopuszczalnego.')
+# def print_solution_fea(model, execution_time):
+#     if model.solution is not None:
+#         print(f'Czas wykonania: {execution_time} sekund')
+#         print(model.solution.display())
+#     else:
+#         print(f'Czas wykonania: {execution_time} sekund')
+#         print('Nie znaleziono rozwiązania dopuszczalnego.')
 
 def analyze_parameters():
     n_values = [10, 20, 30, 40]
